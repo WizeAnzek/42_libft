@@ -12,39 +12,19 @@
 
 #include "libft.h"
 
-static void	ft_print_nb(long nb, int fd)
-{
-	char	str[10];
-	int		i;
-
-	i = 0;
-	while (nb > 0)
-	{
-		str[i] = '0' + nb % 10;
-		i++;
-		nb = nb / 10;
-	}
-	i--;
-	while (i >= 0)
-	{
-		ft_putchar_fd(str[i], fd);
-		i--;
-	}
-}
-
 void	ft_putnbr_fd(int n, int fd)
 {
-	long	nb;
-
-	nb = n;
-	if (nb < 0)
-	{
-		nb = -nb;
-		ft_putchar_fd('-', 1);
-		ft_print_nb(nb, fd);
-	}
-	else if (nb == 0)
-		ft_putchar_fd('0', fd);
+	if (n == -2147483648)
+		ft_putstr_fd("-2147483648", fd);
 	else
-		ft_print_nb(nb, fd);
+	{
+		if (n < 0)
+		{
+			ft_putchar_fd('-', fd);
+			n = n * -1;
+		}
+		if (n >= 9)
+			ft_putnbr_fd(n / 10, fd);
+		ft_putchar_fd((n % 10) + '0', fd);
+	}
 }
