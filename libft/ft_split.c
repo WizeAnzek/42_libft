@@ -6,87 +6,72 @@
 /*   By: gugolini <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/19 15:06:41 by gugolini          #+#    #+#             */
-/*   Updated: 2023/01/19 15:06:44 by gugolini         ###   ########.fr       */
+/*   Updated: 2023/01/24 13:14:42 by gugolini         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-static int	count_words(char *str, char c)
+static int	count_words(const char *str, char c)
 {
-	int	i;
-	int	flag;
 	int	count;
+	int	flag;
 
-	i = 0;
-	flag = 1;
 	count = 0;
-	while (str[i])
+	flag = 0;
+	while (*str)
 	{
-		if (str[i] == c)
+		if (*str != c && flag == 0)
 		{
 			flag = 1;
-			i++;
+			count++;
 		}
-		else
-		{
-			if (flag)
-			{
-				flag = 0;
-				count++;
-			}
-			i++;
-		}
+		else if (*str == c)
+			flag = 0;
+		str++;
 	}
 	return (count);
 }
 
-static int	make_put_update(char **array, char *slice, char c, int n_p)
+static char	*make_word(const char *str, int start, int end)
 {
+	char	*word;
 	int		i;
-	int		j;
-	char	*str;
 
 	i = 0;
-	j = 0;
-	while (slice[i])
-	{
-		if (slice[i] == c)
-			break ;
-		i++;
-	}
-	str = malloc(i);
-	while (j < i)
-	{
-		str[j] = slice[j];
-		j++;
-	}
-	str[j] = '\0';
-	array[n_p] = str;
-	return (i);
+	word = malloc(end - start + 1);
+	if (!word)
+		return (NULL);
+	while (start < end)
+		word[i++] = str[start++];
+	word[i] = '\0';
+	return (word);
 }
 
 char	**ft_split(char const *str, char c)
 {
-	int		num_parole;
-	int		i;
+	size_t	i;
+	size_t	j;
 	char	**array;
-	int		n_p;
+	int		index;
 
-	num_parole = count_words((char *)str, c);
-	array = malloc(8 * (num_parole + 1));
+	array = malloc(sizeof(char *) * (count_words(str, c) + 1));
+	if (!array)
+		return (NULL);
 	i = 0;
-	n_p = 0;
-	while (str[i])
+	j = 0;
+	index = -1;
+	while (i <= ft_strlen(str))
 	{
-		if (str[i] == c)
-			i++;
-		else
+		if (str[i] != c && index == -1)
+			index = i;
+		else if ((str[i] == c || i == ft_strlen(str)) && index >= 0)
 		{
-			i += make_put_update(array, (char *)&str[i], c, n_p);
-			n_p++;
+			array[j++] = make_word(str, index, i);
+			index = -1;
 		}
+		i++;
 	}
-	array[n_p] = 0;
+	array[j] = 0;
 	return (array);
 }
